@@ -1615,8 +1615,9 @@ var drawImg = function(text, options) {
     }
 
     // calc cellsize and margin
-    var cellsize = parseInt(size / qr.getModuleCount());
-    var margin = parseInt((size - qr.getModuleCount() * cellsize) / 2);
+		var MARGIN_COUNT = 2 * 2;
+    var cellsize = Math.round(size / (qr.getModuleCount() + MARGIN_COUNT));
+    var margin = Math.round((size - qr.getModuleCount() * cellsize) / 2);
 
     return qr.createImgTag(cellsize, margin, size);
 };

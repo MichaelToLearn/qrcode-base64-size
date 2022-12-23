@@ -1,14 +1,15 @@
 {
-  "name": "qrcode-base64",
+  "name": "qrcode-base64-size",
   "version": "1.0.1",
   "description": "Generating the QR code in the form of Base64",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Pudon/qrcode-base64.git"
+    "url": "git+https://github.com/MichaelToLearn/qrcode-base64-size.git"
   },
   "keywords": [
     "qrcode-base64",
@@ -16,10 +17,6 @@
     "wx",
     "mini-program"
   ],
-  "author": "Pudon",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Pudon/qrcode-base64/issues"
-  },
-  "homepage": "https://github.com/Pudon/qrcode-base64#readme"
+  "homepage": "https://github.com/MichaelToLearn/qrcode-base64-size"
 }
