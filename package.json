@@ -1,6 +1,6 @@
 {
   "name": "qrcode-base64-size",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generating the QR code in the form of Base64",
   "main": "index.js",
   "types": "index.d.ts",
