@@ -417,14 +417,14 @@ var qrcode = function (typeNumber, errorCorrectLevel) {
     return qrHtml
   }
 
-  _this.createImgTag = function (cellSize, margin, size) {
+  _this.createImgTag = function (cellSize, margin, size, backgroundColor, foregroundColor) {
     cellSize = cellSize || 2
     margin = typeof margin == 'undefined' ? cellSize * 4 : margin
 
     var min = margin
     var max = _this.getModuleCount() * cellSize + margin
 
-    return createImgTag(size, size, function (x, y) {
+    return createImgTag(size, size, backgroundColor, foregroundColor, function (x, y) {
       if (min <= x && x < max && min <= y && y < max) {
         var c = Math.floor((x - min) / cellSize)
         var r = Math.floor((y - min) / cellSize)
@@ -1470,12 +1470,37 @@ var base64DecodeInputStream = function (str) {
 // gifImage (B/W)
 //---------------------------------------------------------------------
 
-var gifImage = function (width, height) {
+var gifImage = function (width, height, backgroundColor, foregroundColor) {
   var _width = width
   var _height = height
   var _data = new Array(width * height)
 
-  var _this = {}
+  var _this = {
+    backgroundColorArray: [0xff, 0xff, 0xff],
+    foregroundColorArray: [0x00, 0x00, 0x00],
+  }
+
+  _this.setColor = function (backgroundColor, foregroundColor) {
+    _this.backgroundColorArray = _this.hexStringToArray(backgroundColor)
+    _this.foregroundColorArray = _this.hexStringToArray(foregroundColor)
+  }
+
+  _this.hexStringToArray = function (str) {
+    if (!/^#[0-9a-fA-F]{6}$/.test(str)) {
+      console.error('[qrcode-base64-size::hexStringToArray] Invalid input. The input should be in the format like "#123456".');
+      return null;
+    }
+  
+    const hex = str.slice(1);
+    const hexArray = [];
+  
+    for (let i = 0; i < 6; i += 2) {
+      const hexValue = parseInt(hex.slice(i, i + 2), 16);
+      hexArray.push(hexValue);
+    }
+  
+    return hexArray;
+  }
 
   _this.setPixel = function (x, y, pixel) {
     _data[y * _width + x] = pixel
@@ -1501,14 +1526,14 @@ var gifImage = function (width, height) {
     // Global Color Map
 
     // black
-    out.writeByte(0x00)
-    out.writeByte(0x00)
-    out.writeByte(0x00)
+    out.writeByte(_this.foregroundColorArray[0])
+    out.writeByte(_this.foregroundColorArray[1])
+    out.writeByte(_this.foregroundColorArray[2])
 
     // white
-    out.writeByte(0xff)
-    out.writeByte(0xff)
-    out.writeByte(0xff)
+    out.writeByte(_this.backgroundColorArray[0])
+    out.writeByte(_this.backgroundColorArray[1])
+    out.writeByte(_this.backgroundColorArray[2])
 
     //---------------------------------
     // Image Descriptor
@@ -1547,6 +1572,8 @@ var gifImage = function (width, height) {
     // GIF Terminator
     out.writeString(';')
   }
+
+  _this.setColor(backgroundColor, foregroundColor)
 
   var bitOutputStream = function (out) {
     var _out = out
@@ -1669,8 +1696,8 @@ var gifImage = function (width, height) {
   return _this
 }
 
-var createImgTag = function (width, height, getPixel, alt) {
-  var gif = gifImage(width, height)
+var createImgTag = function (width, height, backgroundColor, foregroundColor, getPixel, alt) {
+  var gif = gifImage(width, height, backgroundColor, foregroundColor)
   for (var y = 0; y < height; y += 1) {
     for (var x = 0; x < width; x += 1) {
       gif.setPixel(x, y, getPixel(x, y))
@@ -1702,6 +1729,8 @@ var drawImg = function (text, options) {
   var typeNumber = options.typeNumber || 4
   var errorCorrectLevel = options.errorCorrectLevel || 'M'
   var size = options.size || 500
+  var backgroundColor = options.backgroundColor || '#ffffff'
+  var foregroundColor = options.foregroundColor || '#000000'
 
   var qr
 
@@ -1726,7 +1755,7 @@ var drawImg = function (text, options) {
   var cellsize = Math.round(size / (qr.getModuleCount() + MARGIN_COUNT))
   var margin = Math.round((size - qr.getModuleCount() * cellsize) / 2)
 
-  return qr.createImgTag(cellsize, margin, size)
+  return qr.createImgTag(cellsize, margin, size, backgroundColor, foregroundColor)
 }
 module.exports = {
   drawImg: drawImg,
